@@ -12,11 +12,9 @@ use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
-    private UserService $userService;
-
-    public function __construct(UserService $userService)
+    public function __construct(
+        private UserService $userService)
     {
-        $this->userService = $userService;
     }
 
     public function register(RegisterRequest $request): JsonResponse
