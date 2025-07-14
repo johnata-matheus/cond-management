@@ -22,7 +22,6 @@ class StoreResidentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id'],
             'apartment' => ['required', 'string', 'max:10'],
             'block' => ['nullable', 'string', 'max:5'],
             'phone' => ['nullable', 'string', 'max:20'],

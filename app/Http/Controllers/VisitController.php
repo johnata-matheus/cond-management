@@ -18,18 +18,22 @@ class VisitController extends Controller
 
     public function index(Request $request)
     {
-        $visits = $this->visitService->getVisits(
-            $request->only(['resident_id', 'status', 'visit_date']),
-            $request->get('per_page', 15)
-        );
+        $residentId = $request->user()->resident->id;
+        $visits = $this->visitService->getVisits([
+            'resident_id' => $residentId,
+            'visit_date' => $request->get('visit_date')
+        ]);
 
         return VisitResource::collection($visits);
     }
 
     public function store(StoreVisitRequest $request): VisitResource
     {
-        $visit = $this->visitService->createVisit($request->validated());
-        
+        $data = $request->validated();
+        $data['resident_id'] = $request->user()->resident->id;
+
+        $visit = $this->visitService->createVisit($data);
+
         return new VisitResource($visit->load('resident.user'));
     }
 
@@ -68,5 +72,11 @@ class VisitController extends Controller
         $this->visitService->cancelVisit($visit);
         
         return new VisitResource($visit->fresh(['resident.user']));
+    }
+
+    public function all(Request $request)
+    {
+        $visits = $this->visitService->getVisits();
+        return VisitResource::collection($visits);
     }
 }

@@ -20,36 +20,40 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = $this->userService->createUser($request->validated());
-        
-        Auth::login($user);
-        
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'user' => new UserResource($user)
+            'user' => new UserResource($user),
+            'token' => $token,
+            'token_type' => 'Bearer'
         ], 201);
     }
 
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->only('email', 'password');
-        
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+
+        if (!Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Credenciais inválidas'
             ], 401);
         }
-        
+
+        $user = Auth::user();
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'user' => new UserResource(Auth::user())
+            'user' => new UserResource($user),
+            'token' => $token,
+            'token_type' => 'Bearer'
         ]);
     }
 
     public function logout(Request $request): JsonResponse
     {
-        Auth::logout();
-        
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        
+        // Revoga o token atual
+        $request->user()->currentAccessToken()->delete();
+
         return response()->json([
             'message' => 'Logout realizado com sucesso'
         ]);

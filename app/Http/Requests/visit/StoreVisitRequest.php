@@ -22,12 +22,9 @@ class StoreVisitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'resident_id' => ['required', 'exists:residents,id'],
             'visitor_name' => ['required', 'string', 'max:255'],
             'visitor_phone' => ['nullable', 'string', 'max:20'],
             'visit_date' => ['required', 'date', 'after_or_equal:today'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
             'car_model' => ['nullable', 'string', 'max:100'],
             'car_color' => ['nullable', 'string', 'max:50'],
             'license_plate' => ['nullable', 'string', 'max:10'],

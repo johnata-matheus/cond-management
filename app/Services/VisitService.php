@@ -4,12 +4,11 @@ namespace App\Services;
 
 use App\Models\Visit;
 use App\Models\Resident;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class VisitService
 {
-    public function getVisits(array $filters = [], int $perPage = 15): LengthAwarePaginator
+    public function getVisits(array $filters = []): Collection
     {
         $query = Visit::with(['resident.user']);
 
@@ -17,17 +16,11 @@ class VisitService
             $query->where('resident_id', $filters['resident_id']);
         }
 
-        if (isset($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
-
         if (isset($filters['visit_date'])) {
             $query->whereDate('visit_date', $filters['visit_date']);
         }
 
-        return $query->orderBy('visit_date', 'desc')
-                    ->orderBy('start_time')
-                    ->paginate($perPage);
+        return $query->orderBy('visit_date', 'desc')->get();
     }
 
     public function createVisit(array $data): Visit

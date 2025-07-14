@@ -28,8 +28,11 @@ class ResidentController extends Controller
 
     public function store(StoreResidentRequest $request): ResidentResource
     {
-        $resident = $this->residentService->createResident($request->validated());
-        
+        $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
+
+        $resident = $this->residentService->createResident($data);
+
         return new ResidentResource($resident->load('user'));
     }
 

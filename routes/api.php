@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ResidentController;
+use App\Http\Controllers\VisitController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,4 +22,13 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::apiResource('residents', ResidentController::class);
+    
+    // Visits routes
+    Route::apiResource('visits', VisitController::class);
+    
+    // Ações específicas de visitas
+    Route::patch('/visits/{visit}/confirm', [VisitController::class, 'confirm']);
+    Route::patch('/visits/{visit}/cancel', [VisitController::class, 'cancel']);
 });

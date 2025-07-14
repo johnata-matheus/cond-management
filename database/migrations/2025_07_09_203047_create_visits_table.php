@@ -17,8 +17,6 @@ return new class extends Migration
             $table->string('visitor_name');
             $table->string('visitor_phone', 20)->nullable();
             $table->date('visit_date');
-            $table->time('start_time');
-            $table->time('end_time')->nullable();
             
             $table->string('car_model')->nullable();
             $table->string('car_color')->nullable();
