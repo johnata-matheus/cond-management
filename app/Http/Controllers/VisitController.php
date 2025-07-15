@@ -17,27 +17,24 @@ class VisitController extends Controller
     ) {}
 
     public function index(Request $request)
-{
-    $resident = $request->user()->resident;
-    if (!$resident) {
-        return response()->json(['error' => 'Usuário não possui morador vinculado.'], 403);
-    }
-    $visits = $this->visitService->getVisits([
-        'resident_id' => $resident->id,
-        'status' => $request->get('status'),
-        'visit_date' => $request->get('visit_date')
-    ]);
-    return VisitResource::collection($visits);
-}
-
-    public function store(StoreVisitRequest $request): VisitResource
     {
-        $data = $request->validated();
+        $residentId = $request->user()->resident->id;
+        $visits = $this->visitService->getVisits([
+            'resident_id' => $residentId,
+            'visit_date' => $request->get('visit_date')
+        ]);
+
+        return VisitResource::collection($visits);
+    }
+
+    public function store(Request $request): VisitResource
+    {
+        $data = $request->all();
         $data['resident_id'] = $request->user()->resident->id;
 
         $visit = $this->visitService->createVisit($data);
 
-        return new VisitResource($visit->load('resident.user'));
+        return new VisitResource($visit);
     }
 
     public function show(Visit $visit): VisitResource
@@ -67,14 +64,14 @@ class VisitController extends Controller
     {
         $this->visitService->confirmVisit($visit);
         
-        return new VisitResource($visit->fresh(['resident.user']));
+        return new VisitResource($visit);
     }
 
     public function cancel(Visit $visit): VisitResource
     {
         $this->visitService->cancelVisit($visit);
         
-        return new VisitResource($visit->fresh(['resident.user']));
+        return new VisitResource($visit);
     }
 
     public function all(Request $request)
