@@ -18,23 +18,44 @@ class VisitController extends Controller
 
     public function index(Request $request)
     {
-        $residentId = $request->user()->resident->id;
+        $user = $request->user();
+        $resident = $user->resident()->first();
+
+        if (!$resident) {
+            return response()->json(['error' => 'Usuário não possui morador vinculado.'], 403);
+        }
+
         $visits = $this->visitService->getVisits([
-            'resident_id' => $residentId,
+            'resident_id' => $resident->id,
             'visit_date' => $request->get('visit_date')
         ]);
 
         return VisitResource::collection($visits);
     }
 
-    public function store(Request $request): VisitResource
+    public function store(Request $request)
     {
-        $data = $request->all();
-        $data['resident_id'] = $request->user()->resident->id;
+        try {
+            $user = $request->user();
+            $resident = $user->resident()->first();
 
-        $visit = $this->visitService->createVisit($data);
+            if (!$resident) {
+                return response()->json(['error' => 'Usuário não possui morador vinculado.'], 403);
+            }
 
-        return new VisitResource($visit);
+            $data = $request->all();
+            $data['resident_id'] = $resident->id;
+
+            $visit = $this->visitService->createVisit($data);
+
+            return new VisitResource($visit);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Erro ao criar visita',
+                'message' => $e->getMessage(),
+                'trace' => config('app.debug') ? $e->getTrace() : null,
+            ], 500);
+        }
     }
 
     public function show(Visit $visit): VisitResource
