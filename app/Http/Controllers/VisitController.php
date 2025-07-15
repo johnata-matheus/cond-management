@@ -17,21 +17,22 @@ class VisitController extends Controller
     ) {}
 
     public function index(Request $request)
-    {
-        $residentId = $request->user()->resident->id;
-        dd($request->user()->resident);
-        $visits = $this->visitService->getVisits([
-            'resident_id' => $residentId,
-            'visit_date' => $request->get('visit_date')
-        ]);
-
-        return VisitResource::collection($visits);
+{
+    $resident = $request->user()->resident;
+    if (!$resident) {
+        return response()->json(['error' => 'Usuário não possui morador vinculado.'], 403);
     }
+    $visits = $this->visitService->getVisits([
+        'resident_id' => $resident->id,
+        'status' => $request->get('status'),
+        'visit_date' => $request->get('visit_date')
+    ]);
+    return VisitResource::collection($visits);
+}
 
     public function store(StoreVisitRequest $request): VisitResource
     {
         $data = $request->validated();
-        dd($request->user()->resident);
         $data['resident_id'] = $request->user()->resident->id;
 
         $visit = $this->visitService->createVisit($data);
