@@ -22,7 +22,6 @@ return [
     'allowed_origins' => [
         'http://localhost:5173',
         'https://cond-frontend-production.up.railway.app',
-        'https://cond-frontend-production.up.railway.app/visits'
     ],
 
     'allowed_origins_patterns' => [],
