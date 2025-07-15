@@ -19,6 +19,7 @@ class VisitController extends Controller
     public function index(Request $request)
     {
         $residentId = $request->user()->resident->id;
+        dd($request->user()->resident);
         $visits = $this->visitService->getVisits([
             'resident_id' => $residentId,
             'visit_date' => $request->get('visit_date')
