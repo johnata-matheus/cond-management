@@ -31,6 +31,7 @@ class VisitController extends Controller
     public function store(StoreVisitRequest $request): VisitResource
     {
         $data = $request->validated();
+        dd($request->user()->resident);
         $data['resident_id'] = $request->user()->resident->id;
 
         $visit = $this->visitService->createVisit($data);
