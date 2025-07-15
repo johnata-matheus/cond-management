@@ -4,4 +4,4 @@
 php artisan config:cache
 
 # Executa as migrations forçadas
-php artisan migrate --force
+php artisan migrate:fresh --force
